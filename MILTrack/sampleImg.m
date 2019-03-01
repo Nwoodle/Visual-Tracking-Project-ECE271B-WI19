@@ -46,7 +46,8 @@ i = 1;
 dist  = (y-r).^2+(x-c).^2;
 rd = rand(size(r));
 
-ind = (rd<prob)&(dist<inradsq)&(dist>=outradsq);
+% ind = (rd<prob)&(dist<inradsq)&(dist>=outradsq);
+ind = (rd<prob); % Use a rectangular search window
 c = c(ind==1);
 r = r(ind==1);
 
