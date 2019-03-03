@@ -100,6 +100,8 @@ for i = 2:num
     w = detectx.sampleImage.sw(index);
     h = detectx.sampleImage.sh(index);
     initstate = [x y w h];
+    %-------------------------------------
+    
     %-----------------------------------------Show the tracking result
     figure(1);
     imshow(uint8(img1));
@@ -110,7 +112,7 @@ for i = 2:num
     %------------------------------------------Sampling test
     %pix_var = getPixVarNearTarget(img, [x,y], w, h);
     pix_var = 0;
-    [posx.sampleImage, negx.sampleImage] = sampleImgwVarConstraint(detectx.sampleImage, ensemble_confs, index, 200, 500, pix_var);
+    [posx.sampleImage, negx.sampleImage] = sampleImgwVarConstraint(detectx.sampleImage, trparams.init_postrainrad, ensemble_confs, index, 200, 500, pix_var);
     %--------------------------------------------------Update all the features in pool
     selector = 1:M;
     posx.feature = getFtrVal(iH,posx.sampleImage,ftr,selector);

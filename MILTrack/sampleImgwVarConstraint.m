@@ -1,29 +1,43 @@
-function [pos_samples, neg_samples] = sampleImgwVarConstraint(samples, smpl_ensemble_conf, target_ind, pos_max_num, neg_max_num, pix_var)
+function [pos_samples, neg_samples] = sampleImgwVarConstraint(samples,pos_rad, smpl_ensemble_conf, target_ind, pos_max_num, neg_max_num, pix_var)
     delta_x_to_target = samples.sx - samples.sx(target_ind);
     delta_y_to_target = samples.sy - samples.sy(target_ind);
     dist_to_target = sqrt(delta_x_to_target.^2 + ...
-        delta_y_to_target.^2);
-    
+    delta_y_to_target.^2);
+    tri = delaunay(delta_x_to_target, delta_y_to_target);
+    [dfx, dfy] = trigradient(tri, delta_x_to_target, delta_y_to_target, smpl_ensemble_conf);
+    df = sqrt(dfx.^2 + dfy .^ 2);
     max_conf = smpl_ensemble_conf(target_ind);
     %feat_to_dist_factor = mean(sqrt(var(samples.feature, [], 2)))/sqrt(pix_var);
     dist_var = sqrt(abs(max_conf)) * (1 + mySigmoid(max_conf, [-1, 0]));
     fprintf('Confidence: %.2f, positive bag radius %.2f, scaled radius %.2f\n', max_conf, sqrt(abs(max_conf)), dist_var);
-    %{
+    pos_candidate_inds = find(df <= (df(target_ind)+0.1*(max(df)-df(target_ind))));
+    neg_candidate_inds = find(df > df(target_ind));
+    %     {
         figure(2);
         clf;
         hold on;
-        tri = delaunay(delta_x_to_target, delta_y_to_target);
+
         trisurf(tri, delta_x_to_target, delta_y_to_target, smpl_ensemble_conf);
         axis vis3d;
         scatter3(0,0,smpl_ensemble_conf(target_ind), 'r', 'filled'); % Location of the target in current frame
         thetas = 0:0.01:2*pi;
-        plot3(dist_var*cos(thetas), dist_var*sin(thetas), ...
-        smpl_ensemble_conf(target_ind) + zeros(size(thetas)), 'LineWidth', 2);
+        plot3(pos_rad*cos(thetas), pos_rad*sin(thetas), ...
+        zeros(size(thetas)), 'LineWidth', 2);
         hold off;
-    %}
-    
-    pos_candidate_inds = find(dist_to_target<=dist_var);
-    neg_candidate_inds = find(dist_to_target>dist_var);
+        %-------------------
+        figure(3);
+        clf;
+        hold on;
+
+        trisurf(tri, delta_x_to_target, delta_y_to_target, df);
+        axis vis3d;
+        scatter3(0,0,250, 'r', 'filled'); % Location of the target in current frame
+        thetas = 0:0.01:2*pi;
+        plot3(pos_rad*cos(thetas), pos_rad*sin(thetas), ...
+        zeros(size(thetas)), 'LineWidth', 2);
+        hold off;
+        %-------------------
+%     }
     if length(pos_candidate_inds) > pos_max_num
         pos_candidate_inds = pos_candidate_inds(randi(length(pos_candidate_inds), pos_max_num, 1));
     end

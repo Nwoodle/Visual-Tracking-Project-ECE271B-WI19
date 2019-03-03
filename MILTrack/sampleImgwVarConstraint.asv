@@ -8,11 +8,14 @@ function [pos_samples, neg_samples] = sampleImgwVarConstraint(samples, smpl_ense
     %feat_to_dist_factor = mean(sqrt(var(samples.feature, [], 2)))/sqrt(pix_var);
     dist_var = sqrt(abs(max_conf)) * (1 + mySigmoid(max_conf, [-1, 0]));
     fprintf('Confidence: %.2f, positive bag radius %.2f, scaled radius %.2f\n', max_conf, sqrt(abs(max_conf)), dist_var);
-    %{
+%     {
         figure(2);
         clf;
         hold on;
         tri = delaunay(delta_x_to_target, delta_y_to_target);
+        %-------------------
+        [dfx, dfy] = trigradient(tri, delta_x_to_target, delta_y_to_target, smpl_ensemble_conf);
+        %-------------------
         trisurf(tri, delta_x_to_target, delta_y_to_target, smpl_ensemble_conf);
         axis vis3d;
         scatter3(0,0,smpl_ensemble_conf(target_ind), 'r', 'filled'); % Location of the target in current frame
@@ -20,7 +23,7 @@ function [pos_samples, neg_samples] = sampleImgwVarConstraint(samples, smpl_ense
         plot3(dist_var*cos(thetas), dist_var*sin(thetas), ...
         smpl_ensemble_conf(target_ind) + zeros(size(thetas)), 'LineWidth', 2);
         hold off;
-    %}
+%     }
     
     pos_candidate_inds = find(dist_to_target<=dist_var);
     neg_candidate_inds = find(dist_to_target>dist_var);

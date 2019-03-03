@@ -16,12 +16,9 @@ rand('state',0);%
 addpath('./data');
 %----------------------------------
 load init.txt;
-%initstate = init;%initial tracker
-initstate = [232,88,76,84];
+initstate = init;%initial tracker
 %----------------------------Set path
-%img_dir = dir('./data/*.png');
-addpath()
-img_dir = dir('../../data/Benchmark/Tiger1/img/*.jpg');
+img_dir = dir('./data/*.png');
 %-----------------------------The object position in the first frame
 % x = initstate(1);% x axis at the Top left corner
 % y = initstate(2);% y axis at the Top left corner
@@ -85,10 +82,10 @@ selector = clfOriMilBoostUpdate(posx,negx,numSel);
 for i = 2:num
     fprintf('Frame %d ', i);
     img1 = imread(img_dir(i).name);
-    %img = double(img1(:,:,1));% Only utilize one channel of image
-    if length(size(img))>2
-        img = rgb2gray(img);
-    end
+    img = double(img1(:,:,1));% Only utilize one channel of image
+    %if length(size(img))>2
+    %    img = rgb2gray(img);
+    %end
     detectx.sampleImage = sampleImg(img,initstate,trparams.srchwinsz,0,100000);
     iH = integral(img);%Compute integral image
     detectx.feature = getFtrVal(iH,detectx.sampleImage,ftr,selector);
@@ -103,6 +100,8 @@ for i = 2:num
     w = detectx.sampleImage.sw(index);
     h = detectx.sampleImage.sh(index);
     initstate = [x y w h];
+    %-------------------------------------
+    
     %-----------------------------------------Show the tracking result
     figure(1);
     imshow(uint8(img1));
