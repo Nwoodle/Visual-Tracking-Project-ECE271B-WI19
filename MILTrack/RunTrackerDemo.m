@@ -1,12 +1,11 @@
-video_path = 'E:\UCSD\Winter 2019\ECE271B\project\data\Benchmark\David\';
-filename = strcat(video_path,'groundtruth_rect', '.txt');
+video_path = 'E:\UCSD\Winter 2019\ECE271B\project\data\Benchmark\David';
+filename = fullfile(video_path,'groundtruth_rect.txt');
 try
     ground_truth = load(filename);  
 catch 
     fprintf('Cannot load groundtruth from %s', filename);
     return;
 end
-
 
 init_pos = ground_truth(1, 1:2);
 target_sz = ground_truth(1, 3:4);
