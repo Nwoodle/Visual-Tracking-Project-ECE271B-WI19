@@ -19,7 +19,7 @@ function [positions, time] = mil_tracker(video_path, img_files, init_pos, target
 % positions: location of the center of the target in the format [col, row]
 % time: total time of tracking a video, w/o the time of loading images
 %%
-rand('state',0);
+rng(0);
 addpath(video_path);
 %----------------------------------
 initstate = [init_pos, target_sz];%initial tracker
@@ -50,7 +50,7 @@ ftrparams.maxNumRect = 4;
 lRate = 0.85;% learning rate parameter ; 0.7 for biker1
 %-------------------------
 M = 250;% number of all weak classifiers in feature pool
-numSel = 50; % number of selected weak classifier 
+numSel = 15; % number of selected weak classifier 
 %-------------------------Initialize the feature mean and variance
 posx.mu = zeros(M,1);% mean of positive features
 negx.mu = zeros(M,1);
