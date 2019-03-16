@@ -80,7 +80,7 @@ function [pos_samples, neg_samples] = sampleImgwVarConstraint(samples, smpl_ense
     pos_ellipse_ax_inds = [dom_dirct_inds(1), mod(dom_dirct_inds(1)+hog_num_bins/2, hog_num_bins)];
     pos_ellipse_ax_inds(pos_ellipse_ax_inds==0) = hog_num_bins;
     dom_dirct_ratio_normed = (hog_selected(pos_ellipse_ax_inds)+eps)./(sum(hog_selected(pos_ellipse_ax_inds))+eps);
-    pos_ellipse_axes = ceil(dist_var)*(mySigmoid(dom_dirct_ratio_normed, [20, 0.5]));
+    pos_ellipse_axes = ceil(dist_var)*(mySigmoid(dom_dirct_ratio_normed, [15, 0.5]));
     focal_dist = norm(pos_ellipse_axes(1) - pos_ellipse_axes(2));
     in_pos_ellipse = false(1, length(samples_sx_shifted));
     walk_along_ridge = true; 
@@ -90,40 +90,22 @@ function [pos_samples, neg_samples] = sampleImgwVarConstraint(samples, smpl_ense
         focal_1 = target_loc + 2*focal_loc_delta;
         focal_2 = target_loc - 2*focal_loc_delta;
         if max_conf > 0
-            in_pos_ellipse_1 = (vecnorm([samples_sx_shifted; samples_sy_shifted]-focal_1') ...
-                + vecnorm([samples_sx_shifted;samples_sy_shifted]-target_loc')) < 2*pos_ellipse_axes(1);
-            in_pos_ellipse_2 = (vecnorm([samples_sx_shifted; samples_sy_shifted]-focal_2') ...
-                + vecnorm([samples_sx_shifted;samples_sy_shifted]-target_loc')) < 2*pos_ellipse_axes(1);
-            if mean(smpl_ensemble_conf(in_pos_ellipse_1))>mean(smpl_ensemble_conf(in_pos_ellipse_2))
-                in_pos_ellipse = bitor(in_pos_ellipse, in_pos_ellipse_1);
-            else
-                in_pos_ellipse = bitor(in_pos_ellipse, in_pos_ellipse_2);
-            end
+            in_pos_ellipse = prep_pos_bag(samples_sx_shifted, samples_sy_shifted, target_loc, ...
+                focal_1, focal_2, pos_ellipse_axes(1), smpl_ensemble_conf, true, ...
+                in_pos_ellipse);
         else
-            in_pos_ellipse_1 = (vecnorm([samples_sx_shifted; samples_sy_shifted]-focal_1') ...
-                + vecnorm([samples_sx_shifted;samples_sy_shifted]-target_loc')) < 2*pos_ellipse_axes(1);
-            in_pos_ellipse_2 = (vecnorm([samples_sx_shifted; samples_sy_shifted]-focal_2') ...
-                + vecnorm([samples_sx_shifted;samples_sy_shifted]-target_loc')) < 2*pos_ellipse_axes(1);
-            if mean(smpl_ensemble_conf(in_pos_ellipse_1))<mean(smpl_ensemble_conf(in_pos_ellipse_2))
-                in_pos_ellipse = bitor(in_pos_ellipse, in_pos_ellipse_1);
-            else
-                in_pos_ellipse = bitor(in_pos_ellipse, in_pos_ellipse_2);
-            end
+            in_pos_ellipse = prep_pos_bag(samples_sx_shifted, samples_sy_shifted, target_loc, ...
+                focal_1, focal_2, pos_ellipse_axes(1), smpl_ensemble_conf, false, ...
+                in_pos_ellipse);
         end
     end
     if walk_perpen_ridge 
         focal_loc_delta = focal_dist*[cos(hog_angles(pos_ellipse_ax_inds(1))), sin(hog_angles(pos_ellipse_ax_inds(1)))];
         focal_1 = target_loc + 2*focal_loc_delta;
         focal_2 = target_loc - 2*focal_loc_delta;
-        in_pos_ellipse_1 = (vecnorm([samples_sx_shifted; samples_sy_shifted]-focal_1') ...
-            + vecnorm([samples_sx_shifted;samples_sy_shifted]-target_loc')) < 2*pos_ellipse_axes(1);
-        in_pos_ellipse_2 = (vecnorm([samples_sx_shifted; samples_sy_shifted]-focal_2') ...
-            + vecnorm([samples_sx_shifted;samples_sy_shifted]-target_loc')) < 2*pos_ellipse_axes(1);
-        if mean(smpl_ensemble_conf(in_pos_ellipse_1))<mean(smpl_ensemble_conf(in_pos_ellipse_2))
-            in_pos_ellipse = bitor(in_pos_ellipse, in_pos_ellipse_1);
-        else
-            in_pos_ellipse = bitor(in_pos_ellipse, in_pos_ellipse_2);
-        end
+        in_pos_ellipse = prep_pos_bag(samples_sx_shifted, samples_sy_shifted, target_loc, ...
+            focal_1, focal_2, pos_ellipse_axes(1), smpl_ensemble_conf, true, ...
+            in_pos_ellipse);
     end
     
     figure(2);
@@ -179,6 +161,6 @@ function [pos_samples, neg_samples] = sampleImgwVarConstraint(samples, smpl_ense
     norm_smpl_ensemble_conf = (smpl_ensemble_conf - mean(smpl_ensemble_conf))./std(smpl_ensemble_conf);
     pos_samples.weight = mySigmoid(norm_smpl_ensemble_conf(pos_candidate_inds), [1, 0]);
     pos_samples.weight = pos_samples.weight./sum(pos_samples.weight);
-    neg_samples.weight = mySigmoid(norm_smpl_ensemble_conf(neg_candidate_inds), [-1, 0]);
+    neg_samples.weight = mySigmoid(norm_smpl_ensemble_conf(neg_candidate_inds), [-1, 0]) + mySigmoid(norm_smpl_ensemble_conf(neg_candidate_inds), [1, 0]);
     neg_samples.weight = neg_samples.weight./sum(neg_samples.weight);
 end
