@@ -75,6 +75,9 @@ function [pos_samples, neg_samples] = sampleImgwVarConstraint(samples, smpl_ense
         end
     end
     
+    if isempty(hog_multiscale)
+        hog_multiscale = ones(hog_num_bins, 2);
+    end
     hog_selected = max(hog_multiscale, [], 2);
     [~, dom_dirct_inds] = sort(hog_selected, 'descend');
     pos_ellipse_ax_inds = [dom_dirct_inds(1), mod(dom_dirct_inds(1)+hog_num_bins/2, hog_num_bins)];
