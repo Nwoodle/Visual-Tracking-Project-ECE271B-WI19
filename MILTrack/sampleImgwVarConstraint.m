@@ -6,8 +6,8 @@ function [pos_samples, neg_samples] = sampleImgwVarConstraint(samples, smpl_ense
     
     max_conf = smpl_ensemble_conf(target_ind);
     %feat_to_dist_factor = mean(sqrt(var(samples.feature, [], 2)))/sqrt(pix_var);
-    dist_var = sqrt(abs(max_conf)); %* (1 + mySigmoid(max_conf, [-1, 0]));
-    fprintf('Confidence: %.2f\n', max_conf);
+    dist_var = min(sqrt(abs(max_conf)), 10)/2; % * 2 * mySigmoid(max_conf, [-0.01, 0]);
+    %fprintf('Confidence: %.2f\n', max_conf);
     
     % Under construction; adaptive sampling to follow the ridges in the
     % confidence space
@@ -23,12 +23,18 @@ function [pos_samples, neg_samples] = sampleImgwVarConstraint(samples, smpl_ense
     hog_blc_sz = [2,2];
     hog_cell_side_lengths = 10:10:(min((min(conf_img_sz)/max(hog_blc_sz))-1, 30));
     hog_cell_sz_options = arrayfun(@(a) repmat(a, 1, 2), hog_cell_side_lengths, 'UniformOutput', false);
-    hog_num_bins = 9;
+    hog_num_bins = 8;
+    use_signed_hog = false;
+    if ~use_signed_hog
+        hog_angles = ((1:hog_num_bins)*pi./hog_num_bins)-pi/(2*hog_num_bins);
+    else
+        hog_angles = ((-pi:hog_num_bins)*pi./hog_num_bins)-pi/hog_num_bins;
+    end
     hog_multiscale = zeros(hog_num_bins, length(hog_cell_sz_options));
     pt_vis_list = [];
     for i=1:length(hog_cell_sz_options)
         hog_cell_sz = hog_cell_sz_options{i};
-        [hog_feats, valid_pts, pt_vis] = extractHOGFeatures(conf_img, target_loc, 'CellSize', hog_cell_sz, 'BlockSize', hog_blc_sz, 'NumBins', hog_num_bins, 'UseSignedOrientation', false);
+        [hog_feats, valid_pts, pt_vis] = extractHOGFeatures(conf_img, target_loc, 'CellSize', hog_cell_sz, 'BlockSize', hog_blc_sz, 'NumBins', hog_num_bins, 'UseSignedOrientation', use_signed_hog);
         if valid_pts
             hog_multiscale(:, i) = mean(reshape(hog_feats, hog_num_bins, prod(hog_blc_sz)), 2);
             pt_vis_list = [pt_vis_list, pt_vis];
@@ -54,11 +60,11 @@ function [pos_samples, neg_samples] = sampleImgwVarConstraint(samples, smpl_ense
                 hog_region_ind = [hog_region_ind, 1];
             end    
             
-            [hog_feats, valid_pts, pt_vis] = extractHOGFeatures(conf_img, alt_hog_loc, 'CellSize', hog_cell_sz, 'BlockSize', hog_blc_sz, 'NumBins', hog_num_bins, 'UseSignedOrientation', false);
+            [hog_feats, valid_pts, pt_vis] = extractHOGFeatures(conf_img, alt_hog_loc, 'CellSize', hog_cell_sz, 'BlockSize', hog_blc_sz, 'NumBins', hog_num_bins, 'UseSignedOrientation', use_signed_hog);
             if valid_pts
                 hog_candidate_regions = reshape(hog_feats, hog_num_bins, prod(hog_blc_sz));
                 if length(hog_region_ind) == 1
-                    hog_multiscale(:, i) = mean(hog_candidate_regions, 2);
+                    hog_multiscale(:, i) = hog_candidate_regions(:, hog_region_ind);
                 else
                     hog_multiscale(:, i) = mean(hog_candidate_regions(:, hog_region_ind), 2);
                 end
@@ -67,27 +73,42 @@ function [pos_samples, neg_samples] = sampleImgwVarConstraint(samples, smpl_ense
                 hog_multiscale(:, i) = zeros(hog_num_bins, 1);
             end
         end
-        hog_multiscale(1, i) = hog_multiscale(1, i) + hog_multiscale(1, end);
     end
     
+    if isempty(hog_multiscale)
+        hog_multiscale = ones(hog_num_bins, 2);
+    end
     hog_selected = max(hog_multiscale, [], 2);
     [~, dom_dirct_inds] = sort(hog_selected, 'descend');
-    dom_dirct_inds = dom_dirct_inds(1:2);
-    dom_dirct_ratio_normed = (hog_selected(dom_dirct_inds)+eps)./(sum(hog_selected(dom_dirct_inds))+eps);
-    pos_ellipse_axes = ceil(dist_var)*(mySigmoid(dom_dirct_ratio_normed, [20, 0.5]));
+    pos_ellipse_ax_inds = [dom_dirct_inds(1), mod(dom_dirct_inds(1)+hog_num_bins/2, hog_num_bins)];
+    pos_ellipse_ax_inds(pos_ellipse_ax_inds==0) = hog_num_bins;
+    dom_dirct_ratio_normed = (hog_selected(pos_ellipse_ax_inds)+eps)./(sum(hog_selected(pos_ellipse_ax_inds))+eps);
+    pos_ellipse_axes = ceil(dist_var)*(mySigmoid(dom_dirct_ratio_normed, [15, 0.5]));
     focal_dist = norm(pos_ellipse_axes(1) - pos_ellipse_axes(2));
-    hog_angles = (1:hog_num_bins)*pi./hog_num_bins;
-    focal_loc_delta = focal_dist*[cos(hog_angles(dom_dirct_inds(1))), sin(hog_angles(dom_dirct_inds(1)))];
-    focal_1 = target_loc + 2*focal_loc_delta;
-    focal_2 = target_loc - 2*focal_loc_delta;
-    in_pos_ellipse_1 = (vecnorm([samples_sx_shifted; samples_sy_shifted]-focal_1') ...
-        + vecnorm([samples_sx_shifted;samples_sy_shifted]-target_loc')) < 2*pos_ellipse_axes(1);
-    in_pos_ellipse_2 = (vecnorm([samples_sx_shifted; samples_sy_shifted]-focal_2') ...
-        + vecnorm([samples_sx_shifted;samples_sy_shifted]-target_loc')) < 2*pos_ellipse_axes(1);
-    if mean(smpl_ensemble_conf(in_pos_ellipse_1))>mean(smpl_ensemble_conf(in_pos_ellipse_2))
-        in_pos_ellipse = in_pos_ellipse_1;
-    else
-        in_pos_ellipse = in_pos_ellipse_2;
+    in_pos_ellipse = false(1, length(samples_sx_shifted));
+    walk_along_ridge = true; 
+    walk_perpen_ridge = false;
+    if walk_along_ridge
+        focal_loc_delta = focal_dist*[sin(hog_angles(pos_ellipse_ax_inds(1))), cos(hog_angles(pos_ellipse_ax_inds(1)))];
+        focal_1 = target_loc + 2*focal_loc_delta;
+        focal_2 = target_loc - 2*focal_loc_delta;
+        if max_conf > 0
+            in_pos_ellipse = prep_pos_bag(samples_sx_shifted, samples_sy_shifted, target_loc, ...
+                focal_1, focal_2, pos_ellipse_axes(1), smpl_ensemble_conf, true, ...
+                in_pos_ellipse);
+        else
+            in_pos_ellipse = prep_pos_bag(samples_sx_shifted, samples_sy_shifted, target_loc, ...
+                focal_1, focal_2, pos_ellipse_axes(1), smpl_ensemble_conf, false, ...
+                in_pos_ellipse);
+        end
+    end
+    if walk_perpen_ridge 
+        focal_loc_delta = focal_dist*[cos(hog_angles(pos_ellipse_ax_inds(1))), sin(hog_angles(pos_ellipse_ax_inds(1)))];
+        focal_1 = target_loc + 2*focal_loc_delta;
+        focal_2 = target_loc - 2*focal_loc_delta;
+        in_pos_ellipse = prep_pos_bag(samples_sx_shifted, samples_sy_shifted, target_loc, ...
+            focal_1, focal_2, pos_ellipse_axes(1), smpl_ensemble_conf, true, ...
+            in_pos_ellipse);
     end
     
     figure(2);
@@ -104,6 +125,7 @@ function [pos_samples, neg_samples] = sampleImgwVarConstraint(samples, smpl_ense
     
     figure(3);
     clf;
+    view([45, 30]);
     hold on;
     tri = delaunay(delta_x_to_target, delta_y_to_target);
     trisurf(tri, delta_x_to_target, delta_y_to_target, smpl_ensemble_conf);
@@ -119,7 +141,9 @@ function [pos_samples, neg_samples] = sampleImgwVarConstraint(samples, smpl_ense
     neg_candidate_inds = find(~in_pos_ellipse);    
     %pos_candidate_inds = find(dist_to_target<=dist_var);
     %neg_candidate_inds = find(dist_to_target>dist_var);
-
+    if isempty(pos_candidate_inds) 
+        pause(0.1);
+    end
     if length(pos_candidate_inds) > pos_max_num
         pos_candidate_inds = pos_candidate_inds(randi(length(pos_candidate_inds), pos_max_num, 1));
     end
@@ -140,6 +164,6 @@ function [pos_samples, neg_samples] = sampleImgwVarConstraint(samples, smpl_ense
     norm_smpl_ensemble_conf = (smpl_ensemble_conf - mean(smpl_ensemble_conf))./std(smpl_ensemble_conf);
     pos_samples.weight = mySigmoid(norm_smpl_ensemble_conf(pos_candidate_inds), [1, 0]);
     pos_samples.weight = pos_samples.weight./sum(pos_samples.weight);
-    neg_samples.weight = mySigmoid(norm_smpl_ensemble_conf(neg_candidate_inds), [-1, 0]);
+    neg_samples.weight = mySigmoid(norm_smpl_ensemble_conf(neg_candidate_inds), [-1, 0]) + mySigmoid(norm_smpl_ensemble_conf(neg_candidate_inds), [1, 0]);
     neg_samples.weight = neg_samples.weight./sum(neg_samples.weight);
 end

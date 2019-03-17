@@ -19,7 +19,7 @@ function [positions, time] = mil_tracker(video_path, img_files, init_pos, target
 % positions: location of the center of the target in the format [col, row]
 % time: total time of tracking a video, w/o the time of loading images
 %%
-rand('state',0);
+rng(0);
 addpath(video_path);
 %----------------------------------
 initstate = [init_pos, target_sz];%initial tracker
@@ -84,7 +84,7 @@ selector = clfOriMilBoostUpdate(posx,negx,numSel);
 %--------------------------------------------------------
 %% Start tracking
 for i = 2:num_of_frames
-    fprintf('Frame %d ', i);
+    %fprintf('Frame %d ', i);
     img1 = imread(img_files{i});
     
     tic; % The total running time of the algo does not include image read time
@@ -118,7 +118,7 @@ for i = 2:num_of_frames
     %------------------------------------------Sampling test
     %pix_var = getPixVarNearTarget(img, [x,y], w, h);
     pix_var = 0;
-    [posx.sampleImage, negx.sampleImage] = sampleImgwVarConstraint(detectx.sampleImage, ensemble_confs, index, 200, 500, pix_var);
+    [posx.sampleImage, negx.sampleImage] = sampleImgwVarConstraint(detectx.sampleImage, ensemble_confs, index, 60, 60, pix_var);
     %--------------------------------------------------Update all the features in pool
     selector = 1:M;
     posx.feature = getFtrVal(iH,posx.sampleImage,ftr,selector);
