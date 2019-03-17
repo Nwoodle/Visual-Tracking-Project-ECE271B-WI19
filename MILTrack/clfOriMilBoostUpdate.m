@@ -10,7 +10,10 @@ function selector = clfOriMilBoostUpdate(posx, negx, numSel)
         neg_bags_ensemble_prob = neg_smpl_ensemble_prob;
         
         likelihood = sum([log(pos_bag_ensemble_prob), log(1-neg_bags_ensemble_prob)], 2);
-        [~, selector(i)] = max(likelihood); 
+        %[~, selector(i)] = max(likelihood); 
+        [~, classifier_inds] = sort(likelihood, 'descend');
+        classifier_candidates = setdiff(classifier_inds, selector);
+        selector(i) = classifier_candidates(1);
         pos_smpl_ensemble_conf = pos_smpl_ensemble_conf + posx.pospred(selector(i), :);
         neg_smpl_ensemble_conf = neg_smpl_ensemble_conf + negx.negpred(selector(i), :);
     end

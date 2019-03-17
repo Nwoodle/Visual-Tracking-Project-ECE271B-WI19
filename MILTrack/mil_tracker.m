@@ -50,7 +50,7 @@ ftrparams.maxNumRect = 4;
 lRate = 0.85;% learning rate parameter ; 0.7 for biker1
 %-------------------------
 M = 250;% number of all weak classifiers in feature pool
-numSel = 15; % number of selected weak classifier 
+numSel = 50; % number of selected weak classifier 
 %-------------------------Initialize the feature mean and variance
 posx.mu = zeros(M,1);% mean of positive features
 negx.mu = zeros(M,1);
@@ -118,7 +118,7 @@ for i = 2:num_of_frames
     %------------------------------------------Sampling test
     %pix_var = getPixVarNearTarget(img, [x,y], w, h);
     pix_var = 0;
-    [posx.sampleImage, negx.sampleImage] = sampleImgwVarConstraint(detectx.sampleImage, ensemble_confs, index, 200, 500, pix_var);
+    [posx.sampleImage, negx.sampleImage] = sampleImgwVarConstraint(detectx.sampleImage, ensemble_confs, index, 60, 60, pix_var);
     %--------------------------------------------------Update all the features in pool
     selector = 1:M;
     posx.feature = getFtrVal(iH,posx.sampleImage,ftr,selector);
