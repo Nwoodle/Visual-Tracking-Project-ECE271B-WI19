@@ -6,7 +6,7 @@ function [pos_samples, neg_samples] = sampleImgwVarConstraint(samples, smpl_ense
     
     max_conf = smpl_ensemble_conf(target_ind);
     %feat_to_dist_factor = mean(sqrt(var(samples.feature, [], 2)))/sqrt(pix_var);
-    dist_var = sqrt(abs(max_conf)); % * 2 * mySigmoid(max_conf, [-0.01, 0]);
+    dist_var = min(sqrt(abs(max_conf)), 10)/2; % * 2 * mySigmoid(max_conf, [-0.01, 0]);
     fprintf('Confidence: %.2f\n', max_conf);
     
     % Under construction; adaptive sampling to follow the ridges in the
