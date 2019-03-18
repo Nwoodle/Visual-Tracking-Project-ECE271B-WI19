@@ -39,8 +39,10 @@ function precisions = precision_plot(positions, ground_truth, title, show)
 	if show == 1,
 		figure(4)
         hold on
-		plot(precisions, 'b-', 'LineWidth',2)
+		plot(precisions, 'b-.', 'LineWidth',2)
+        line([20 20],[0 1],'Color','r','LineStyle',':', 'LineWidth',2)
         hold off
+        %legend('Baseline', 'Our Approach', 'Our Approach with Noise')
 		xlabel('Threshold'), ylabel('Precision')
         ylim([0 1])
         grid on
