@@ -1,0 +1,110 @@
+/*************************************************
+Basketball-Precision (20px): 0.026, FPS: 3.01
+Bolt-Precision (20px): 0.000, FPS: 3.51
+Boy-Precision (20px): 0.661, FPS: 3.68
+Car4-Precision (20px): 0.000, FPS: 3.46
+CarDark-Precision (20px): 0.008, FPS: 4.07
+CarScale-Precision (20px): 0.000, FPS: 3.85
+Coke-Precision (20px): 0.003, FPS: 3.11
+Couple-Precision (20px): 0.086, FPS: 3.76
+Crossing-Precision (20px): 0.017, FPS: 3.72
+David-Precision (20px): 0.045, FPS: 3.26
+David2-Precision (20px): 0.480, FPS: 3.89
+David3-Precision (20px): 0.000, FPS: 2.32
+Deer-Precision (20px): 0.000, FPS: 2.90
+Dog1-Precision (20px): 0.001, FPS: 3.74
+Doll-Precision (20px): 0.000, FPS: 3.59
+Dudek-Precision (20px): 0.000, FPS: 1.95
+FaceOcc1-Precision (20px): 0.000, FPS: 2.34
+FaceOcc2-Precision (20px): 0.000, FPS: 3.27
+Fish-Precision (20px): 0.021, FPS: 3.16
+FleetFace-Precision (20px): 0.000, FPS: 2.29
+Football-Precision (20px): 0.000, FPS: 3.70
+Football1-Precision (20px): 0.027, FPS: 3.89
+Freeman1-Precision (20px): 0.006, FPS: 4.09
+Freeman3-Precision (20px): 0.013, FPS: 4.23
+Freeman4-Precision (20px): 0.565, FPS: 4.04
+Girl-Precision (20px): 0.242, FPS: 4.00
+Ironman-Precision (20px): 0.006, FPS: 3.66
+Jumping-Precision (20px): 0.022, FPS: 3.94
+Lemming-Precision (20px): 0.000, FPS: 2.85
+Liquor-Precision (20px): 0.008, FPS: 1.77
+Matrix-Precision (20px): 0.030, FPS: 3.83
+Mhyang-Precision (20px): 0.000, FPS: 3.45
+MotorRolling-Precision (20px): 0.012, FPS: 2.75
+MountainBike-Precision (20px): 0.004, FPS: 3.74
+Shaking-Precision (20px): 0.000, FPS: 3.37
+Singer1-Precision (20px): 0.000, FPS: 2.34
+Singer2-Precision (20px): 0.044, FPS: 2.71
+Skating1-Precision (20px): 0.000, FPS: 3.54
+Skiing-Precision (20px): 0.025, FPS: 3.99
+Soccer-Precision (20px): 0.000, FPS: 3.32
+Subway-Precision (20px): 0.000, FPS: 3.85
+Suv-Precision (20px): 0.000, FPS: 3.33
+Sylvester-Precision (20px): 0.026, FPS: 3.72
+Tiger1-Precision (20px): 0.000, FPS: 3.12
+Tiger2-Precision (20px): 0.003, FPS: 3.21
+Trellis-Precision (20px): 0.000, FPS: 2.98
+Walking-Precision (20px): 0.000, FPS: 3.12
+Walking2-Precision (20px): 0.000, FPS: 2.81
+Woman-Precision (20px): 0.003, FPS: 3.02
+*************************************************/
+/*************************************************
+/*************************************************
+David-Precision (20px): 0.000, FPS: 3.09
+/*************************************************
+/*************************************************
+David-Precision (20px): 0.045, FPS: 3.13
+/*************************************************
+/*************************************************
+/*************************************************
+Basketball-Precision (20px): 0.026, FPS: 2.86
+Bolt-Precision (20px): 0.000, FPS: 3.27
+Boy-Precision (20px): 0.661, FPS: 3.45
+Car4-Precision (20px): 0.000, FPS: 3.29
+CarDark-Precision (20px): 0.008, FPS: 3.84
+CarScale-Precision (20px): 0.000, FPS: 3.63
+Coke-Precision (20px): 0.003, FPS: 2.94
+Couple-Precision (20px): 0.086, FPS: 3.56
+Crossing-Precision (20px): 0.017, FPS: 3.51
+David-Precision (20px): 0.045, FPS: 3.06
+David2-Precision (20px): 0.480, FPS: 3.74
+David3-Precision (20px): 0.000, FPS: 2.21
+Deer-Precision (20px): 0.000, FPS: 2.75
+Dog1-Precision (20px): 0.001, FPS: 3.52
+Doll-Precision (20px): 0.000, FPS: 3.45
+Dudek-Precision (20px): 0.000, FPS: 1.94
+FaceOcc1-Precision (20px): 0.000, FPS: 2.29
+FaceOcc2-Precision (20px): 0.000, FPS: 3.06
+Fish-Precision (20px): 0.021, FPS: 2.95
+FleetFace-Precision (20px): 0.000, FPS: 2.12
+Football-Precision (20px): 0.000, FPS: 3.41
+Football1-Precision (20px): 0.027, FPS: 3.61
+Freeman1-Precision (20px): 0.006, FPS: 3.78
+Freeman3-Precision (20px): 0.013, FPS: 3.93
+Freeman4-Precision (20px): 0.565, FPS: 4.04
+Girl-Precision (20px): 0.242, FPS: 3.83
+Ironman-Precision (20px): 0.006, FPS: 3.53
+Jumping-Precision (20px): 0.022, FPS: 3.81
+Lemming-Precision (20px): 0.000, FPS: 2.78
+Liquor-Precision (20px): 0.008, FPS: 1.68
+Matrix-Precision (20px): 0.030, FPS: 3.48
+Mhyang-Precision (20px): 0.000, FPS: 3.23
+MotorRolling-Precision (20px): 0.012, FPS: 2.66
+MountainBike-Precision (20px): 0.004, FPS: 3.57
+Shaking-Precision (20px): 0.000, FPS: 3.20
+Singer1-Precision (20px): 0.000, FPS: 2.22
+Singer2-Precision (20px): 0.044, FPS: 2.54
+Skating1-Precision (20px): 0.000, FPS: 3.25
+Skiing-Precision (20px): 0.025, FPS: 3.68
+Soccer-Precision (20px): 0.000, FPS: 3.05
+Subway-Precision (20px): 0.000, FPS: 3.55
+Suv-Precision (20px): 0.000, FPS: 3.10
+Sylvester-Precision (20px): 0.026, FPS: 3.55
+Tiger1-Precision (20px): 0.000, FPS: 2.99
+Tiger2-Precision (20px): 0.003, FPS: 3.09
+Trellis-Precision (20px): 0.000, FPS: 2.90
+Walking-Precision (20px): 0.000, FPS: 3.32
+Walking2-Precision (20px): 0.000, FPS: 3.00
+Woman-Precision (20px): 0.003, FPS: 3.18
+*************************************************/
